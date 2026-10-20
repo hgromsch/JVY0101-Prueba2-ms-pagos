@@ -86,7 +86,9 @@ public class PagoService {
         if (pago.totalReembolsado().compareTo(pago.getMonto()) == 0) {
             pago.setEstado(EstadoPago.REEMBOLSADO);
         }
-        pagoRepository.save(pago);
+        // El pago ya está administrado en esta transacción: su nuevo estado se persiste
+        // al hacer flush. Un save(pago) aquí haría merge en cascada e insertaría el
+        // reembolso dos veces.
         // TODO (AWS): ejecutar el reembolso real en la pasarela y publicar evento.
         return reembolsoRepository.save(reembolso);
     }
